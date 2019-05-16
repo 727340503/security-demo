@@ -17,12 +17,15 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().disable();
+		
 		http.formLogin()//用表单登录方式进行身份认证
 //			.loginPage("/imooc-singin.html")
 			.loginPage("/loginPage")
+			.loginProcessingUrl("/authentication/form")
 			.and()
 			.authorizeRequests()
-			.antMatchers("/loginPage").permitAll()
+			.antMatchers("/loginPage","/code/image").permitAll()
 			.anyRequest()//任何请求
 			.authenticated();//都需要认证
 	}
