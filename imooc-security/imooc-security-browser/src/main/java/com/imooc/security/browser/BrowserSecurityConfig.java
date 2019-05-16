@@ -19,9 +19,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http.formLogin()//用表单登录方式进行身份认证
 //			.loginPage("/imooc-singin.html")
+			.loginPage("/loginPage")
 			.and()
 			.authorizeRequests()
-			.antMatchers("/imooc-singin.html").permitAll()
+			.antMatchers("/loginPage").permitAll()
 			.anyRequest()//任何请求
 			.authenticated();//都需要认证
 	}
