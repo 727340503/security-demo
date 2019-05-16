@@ -3,6 +3,9 @@ package com.imooc.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,10 +18,16 @@ import com.imooc.model.User;
 @RestController
 public class UserController {
 	
+	@GetMapping("/me")
+	public Object getCurrnetUser(@AuthenticationPrincipal UserDetails authentication) {
+//		return SecurityContextHolder.getContext().getAuthentication();
+		return authentication;
+	}
+ 	
 	@RequestMapping(value="/user", method=RequestMethod.GET)
 	@JsonView(User.userSimpleView.class)
-	public List<User> query(@RequestParam(required=false) String userName){
-		System.out.println(userName);
+	public List<User> query(@RequestParam(required=false) String username){
+		System.out.println(username);
 		
 		List<User> result = new ArrayList<User>();
 		result.add(new User());
