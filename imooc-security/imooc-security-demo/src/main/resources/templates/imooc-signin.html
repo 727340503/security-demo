@@ -11,7 +11,7 @@
 	<form action="/authentication/form" method="post">
 		<table>
 			<tr>
-				<td>用户名:</td> 
+				<td>用户名:</td>
 				<td><input type="text" name="username" /></td>
 			</tr>
 			<tr>
@@ -20,17 +20,18 @@
 			</tr>
 			<tr>
 				<td>图形验证码:</td>
-				<td>
-					<input type="text" name="imageCode" />
-					<img alt="" src="/code/image" />
-				</td>
+				<td><input type="text" name="imageCode" /> <img alt=""
+					src="/code/image" /></td>
+			</tr>
+			<tr>
+				<td>Remember me<input name="remember-me" value="true" type="checkbox"></input></td>
 			</tr>
 			<tr>
 				<td colspan="2"><button type="submit">登录</button></td>
 			</tr>
 		</table>
 	</form>
-	
-	<br/>
+
+	<br />
 </body>
 </html>

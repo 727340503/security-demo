@@ -16,10 +16,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.ServletWebRequest;
 
+import com.imooc.security.core.properties.contsant.SecurityConstants;
+import com.imooc.security.core.validate.code.ValidateCode;
+
 @Controller
 public class ValidateCodeConrotller {
-
-	private static final String SESSION_KEY = "SESSION_KEY_IMAGE_CODE";
 
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
@@ -27,18 +28,18 @@ public class ValidateCodeConrotller {
 	public void createCode(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 
 		// 生成图片
-		ImageCode imageCode = generateImageCode(request);
+		ValidateCode imageCode = generateImageCode(request);
 		
 		System.out.println(imageCode.getImageCode());
 
 		// 将随机数存到session
-		sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY, imageCode);
+		sessionStrategy.setAttribute(new ServletWebRequest(request), SecurityConstants.DEFAULT_REQUEST_PARAMETER_IMAGECODE, imageCode);
 
 		// 输出图片
 		ImageIO.write(imageCode.getImage(), "JPEG", response.getOutputStream());
 	}
 
-	private ImageCode generateImageCode(HttpServletRequest request) {
+	private ValidateCode generateImageCode(HttpServletRequest request) {
 		int width = 60;
 		int height = 30;
 
@@ -71,7 +72,7 @@ public class ValidateCodeConrotller {
 
 		g.dispose();
 
-		return new ImageCode(image, sRand, 60L);
+		return new ValidateCode(image, sRand, 60L);
 	}
 
 	private Color getRandColor(int fc, int bc) {

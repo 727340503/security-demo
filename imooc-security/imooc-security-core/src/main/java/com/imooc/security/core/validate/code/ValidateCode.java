@@ -1,9 +1,9 @@
-package com.imooc.security.browser.verification.code;
+package com.imooc.security.core.validate.code;
 
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 
-public class ImageCode {
+public class ValidateCode {
 
 	private BufferedImage image;
 
@@ -11,16 +11,20 @@ public class ImageCode {
 
 	private LocalDateTime expiredTime;
 
-	public ImageCode(BufferedImage image, String imageCode, Long expiredIn) {
+	public ValidateCode(BufferedImage image, String imageCode, Long expiredIn) {
 		this.image = image;
 		this.imageCode = imageCode;
 		this.expiredTime = LocalDateTime.now().plusSeconds(expiredIn);
 	}
 
-	public ImageCode(BufferedImage image, String imageCode, LocalDateTime expiredTime) {
+	public ValidateCode(BufferedImage image, String imageCode, LocalDateTime expiredTime) {
 		this.image = image;
 		this.imageCode = imageCode;
 		this.expiredTime = expiredTime;
+	}
+	
+	public boolean isExpired() {
+		return LocalDateTime.now().isAfter(this.expiredTime);
 	}
 
 	public BufferedImage getImage() {
