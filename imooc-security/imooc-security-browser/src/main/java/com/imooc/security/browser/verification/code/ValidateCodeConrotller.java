@@ -18,6 +18,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 
 import com.imooc.security.core.properties.contsant.SecurityConstants;
 import com.imooc.security.core.validate.code.ValidateCode;
+import com.imooc.security.core.validate.code.ValidateCodeImage;
 
 @Controller
 public class ValidateCodeConrotller {
@@ -28,18 +29,18 @@ public class ValidateCodeConrotller {
 	public void createCode(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 
 		// 生成图片
-		ValidateCode imageCode = generateImageCode(request);
+		ValidateCodeImage imageCode = generateImageCode(request);
 		
-		System.out.println(imageCode.getImageCode());
+		System.out.println(imageCode.getValidateCode().getImageCode());
 
 		// 将随机数存到session
-		sessionStrategy.setAttribute(new ServletWebRequest(request), SecurityConstants.DEFAULT_REQUEST_PARAMETER_IMAGECODE, imageCode);
+		sessionStrategy.setAttribute(new ServletWebRequest(request), SecurityConstants.DEFAULT_REQUEST_PARAMETER_IMAGECODE, imageCode.getValidateCode());
 
 		// 输出图片
 		ImageIO.write(imageCode.getImage(), "JPEG", response.getOutputStream());
 	}
 
-	private ValidateCode generateImageCode(HttpServletRequest request) {
+	private ValidateCodeImage generateImageCode(HttpServletRequest request) {
 		int width = 60;
 		int height = 30;
 
@@ -72,7 +73,9 @@ public class ValidateCodeConrotller {
 
 		g.dispose();
 
-		return new ValidateCode(image, sRand, 60L);
+		ValidateCode validateCode = new ValidateCode(sRand, 60L);
+		
+		return new ValidateCodeImage(image, validateCode);
 	}
 
 	private Color getRandColor(int fc, int bc) {
