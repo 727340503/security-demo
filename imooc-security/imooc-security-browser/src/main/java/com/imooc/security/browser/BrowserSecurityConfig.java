@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import com.imooc.security.browser.authentication.ImoocAuthenticationFailureHandler;
 import com.imooc.security.browser.authentication.ImoocAuthenticationSuccessHandler;
 import com.imooc.security.core.validate.code.ValidateCodeFilter;
+import com.imooc.security.core.validate.mobile.SmsCodeSecurityConfig;
+import com.imooc.security.core.validate.mobile.SmsCodeValidateFilter;
 
 @Configuration
 public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
@@ -36,6 +38,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 	public ValidateCodeFilter validateCodeFilter() {
 		return new ValidateCodeFilter();
 	}
+
+	@Bean
+	public SmsCodeValidateFilter smsCodeValidateFilter() {
+		return new SmsCodeValidateFilter();
+	}
 	
 	@Bean
 	public ImoocAuthenticationSuccessHandler successHandler() {
@@ -45,6 +52,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 	@Bean
 	public ImoocAuthenticationFailureHandler failureHandler() {
 		return new ImoocAuthenticationFailureHandler();
+	}
+
+	@Bean
+	public SmsCodeSecurityConfig smsCodeSecurityConfig() {
+		return new SmsCodeSecurityConfig();
 	}
 	
 	@Bean
@@ -57,10 +69,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable();
-		
-		http.addFilterBefore(validateCodeFilter(), UsernamePasswordAuthenticationFilter.class);
-		
 		http.formLogin()//用表单登录方式进行身份认证
 //			.loginPage("/imooc-singin.html")
 				.loginPage("/loginPage")
@@ -86,11 +94,15 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 				.deleteCookies("JESSIONID")
 				.and()
 			.authorizeRequests()
-				.antMatchers("/loginPage","/logout","/code/image","/session/invalid","/logoutSuccess").permitAll()
-				.anyRequest()//任何请求
-				.authenticated()
-				.anyRequest()
-				.access("@rbacPermission.hasPermission(request, authentication)");//都需要认证
+				.antMatchers("/loginPage","/logout","/code/image","/session/invalid","/logoutSuccess","/code/sms").permitAll()
+				.anyRequest().authenticated()//任何请求
+				.anyRequest().access("@rbacPermission.hasPermission(request, authentication)")//都需要认证
+				.and()
+			.csrf().disable()
+			.apply(smsCodeSecurityConfig());
+		
+		http.addFilterBefore(validateCodeFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(smsCodeValidateFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 }

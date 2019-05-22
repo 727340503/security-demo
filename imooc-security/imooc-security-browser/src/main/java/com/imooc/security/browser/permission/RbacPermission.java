@@ -17,7 +17,7 @@ public class RbacPermission {
         if(principal instanceof UserDetails) {
         	String username = ((UserDetails) principal).getUsername();
         	System.out.println("自定义鉴权User name:"+username);
-//        	hasPermission = true;
+        	hasPermission = true;
         	
            /* String username = ((UserDetails) principal).getUsername();
             // 读取用户所拥有的权限url，这里应该从数据库获取

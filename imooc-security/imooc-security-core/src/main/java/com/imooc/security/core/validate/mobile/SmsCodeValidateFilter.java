@@ -1,4 +1,4 @@
-package com.imooc.security.core.validate.code;
+package com.imooc.security.core.validate.mobile;
 
 import java.io.IOException;
 
@@ -16,17 +16,19 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.imooc.security.core.properties.contsant.SecurityConstants;
+import com.imooc.security.core.validate.code.ValidateCode;
+import com.imooc.security.core.validate.code.ValidateCodeException;
 
-public class ValidateCodeFilter extends OncePerRequestFilter {
+public class SmsCodeValidateFilter extends OncePerRequestFilter{
 	
 	@Autowired
 	private AuthenticationFailureHandler authenticationFailureHandler;
 	
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
-	
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		if(StringUtils.equals("/authentication/form", request.getRequestURI()) && StringUtils.equalsIgnoreCase(request.getMethod(), "post")) {
+		if(StringUtils.equals("/authentication/mobile", request.getRequestURI()) && StringUtils.equalsIgnoreCase(request.getMethod(), "post")) {
 			try {
 				validateCode(new ServletWebRequest(request));
 			}catch (ValidateCodeException e) {
@@ -44,7 +46,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
 			throw new ValidateCodeException("验证码不存在");
 		}
 		
-		final String code = servletWebRequest.getParameter(SecurityConstants.DEFAULT_REQUEST_PARAMETER_IMAGECODE);
+		final String code = servletWebRequest.getParameter(SecurityConstants.DEFAULT_REQUEST_PARAMETER_SMSCODE);
 		if(StringUtils.isBlank(code)) {
 			throw new ValidateCodeException("验证码不能为空");
 		}

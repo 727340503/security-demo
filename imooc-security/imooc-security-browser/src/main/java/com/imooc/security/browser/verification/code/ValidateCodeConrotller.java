@@ -12,15 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletWebRequest;
 
 import com.imooc.security.core.properties.contsant.SecurityConstants;
 import com.imooc.security.core.validate.code.ValidateCode;
 import com.imooc.security.core.validate.code.ValidateCodeImage;
 
-@Controller
+@RestController
 public class ValidateCodeConrotller {
 
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
@@ -31,13 +31,38 @@ public class ValidateCodeConrotller {
 		// 生成图片
 		ValidateCodeImage imageCode = generateImageCode(request);
 		
-		System.out.println(imageCode.getValidateCode().getImageCode());
+		System.out.println(imageCode.getValidateCode().getCode());
 
 		// 将随机数存到session
 		sessionStrategy.setAttribute(new ServletWebRequest(request), SecurityConstants.DEFAULT_REQUEST_PARAMETER_IMAGECODE, imageCode.getValidateCode());
 
 		// 输出图片
 		ImageIO.write(imageCode.getImage(), "JPEG", response.getOutputStream());
+	}
+	
+	@GetMapping("/code/sms")
+	public void createCodeSms(final HttpServletRequest request, final String mobile) throws Exception {
+
+		// 生成图片
+		ValidateCode validateCode = generateCode();
+		
+		System.out.println("发送验证码："+validateCode.getCode()+"到手机:"+mobile);
+
+		// 将随机数存到session
+		sessionStrategy.setAttribute(new ServletWebRequest(request), SecurityConstants.DEFAULT_REQUEST_PARAMETER_IMAGECODE, validateCode);
+	}
+
+	private ValidateCode generateCode() {
+		Random random = new Random();
+		String sRand = "";
+		for (int i = 0; i < 4; i++) {
+			String rand = String.valueOf(random.nextInt(10));
+			sRand += rand;
+		}
+		
+		ValidateCode validateCode = new ValidateCode(sRand, 3*60L);
+		
+		return validateCode;
 	}
 
 	private ValidateCodeImage generateImageCode(HttpServletRequest request) {
