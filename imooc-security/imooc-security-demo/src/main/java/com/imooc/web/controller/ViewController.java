@@ -12,4 +12,9 @@ public class ViewController {
 		return "imooc-signin";
 	}
 	
+	@GetMapping("/")
+	public String index() {
+		System.out.println("Index page!");
+		return "index";
+	}
 }

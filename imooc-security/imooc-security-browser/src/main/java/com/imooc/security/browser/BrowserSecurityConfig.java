@@ -80,10 +80,17 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 //				.expiredSessionStrategy(expiredSessionStrategy)
 				.and()
 				.and()
+			.logout()
+				.logoutUrl("/logout")
+				.logoutSuccessUrl("/logoutSuccess")
+				.deleteCookies("JESSIONID")
+				.and()
 			.authorizeRequests()
-				.antMatchers("/loginPage","/code/image","/session/invalid").permitAll()
+				.antMatchers("/loginPage","/logout","/code/image","/session/invalid","/logoutSuccess").permitAll()
 				.anyRequest()//任何请求
-			.authenticated();//都需要认证
+				.authenticated()
+				.anyRequest()
+				.access("@rbacPermission.hasPermission(request, authentication)");//都需要认证
 	}
 	
 }
