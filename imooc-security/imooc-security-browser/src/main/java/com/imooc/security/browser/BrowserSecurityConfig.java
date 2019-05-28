@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.social.security.SpringSocialConfigurer;
 
 import com.imooc.security.browser.authentication.ImoocAuthenticationFailureHandler;
 import com.imooc.security.browser.authentication.ImoocAuthenticationSuccessHandler;
@@ -28,6 +29,9 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Autowired
 	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private SpringSocialConfigurer springSocialConfigurer;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -99,7 +103,9 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter{
 				.anyRequest().access("@rbacPermission.hasPermission(request, authentication)")//都需要认证
 				.and()
 			.csrf().disable()
-			.apply(smsCodeSecurityConfig());
+			.apply(smsCodeSecurityConfig())
+				.and()
+			.apply(springSocialConfigurer);
 		
 		http.addFilterBefore(validateCodeFilter(), UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(smsCodeValidateFilter(), UsernamePasswordAuthenticationFilter.class);
