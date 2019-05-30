@@ -17,9 +17,14 @@
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.imooc.security</groupId>
 			<artifactId>imooc-security-browser</artifactId>
+			<version>${imooc.security.version}</version>
+		</dependency> -->
+		<dependency>
+			<groupId>com.imooc.security</groupId>
+			<artifactId>imooc-security-app</artifactId>
 			<version>${imooc.security.version}</version>
 		</dependency>
 	</dependencies>
