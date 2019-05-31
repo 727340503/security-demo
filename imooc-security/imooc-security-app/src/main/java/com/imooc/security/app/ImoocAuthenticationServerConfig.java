@@ -1,5 +1,8 @@
 package com.imooc.security.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +16,12 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
+import com.imooc.security.app.jwt.ImoocJwtTokenEnhancer;
 import com.imooc.security.core.properties.OAuth2ClientProperties;
 import com.imooc.security.core.properties.SecurityProperties;
 
@@ -26,13 +33,19 @@ public class ImoocAuthenticationServerConfig extends AuthorizationServerConfigur
 	private AuthenticationManager authenticationManager;
 	
 	@Autowired
-	private UserDetailsService userDetailsService;
-	
-	@Autowired
 	private SecurityProperties securityProperties;
 	
 	@Autowired
+	private UserDetailsService userDetailsService;
+	
+	@Autowired
 	private TokenStore tokenStore;
+	
+	@Autowired(required=false)
+	private JwtAccessTokenConverter jwtAccessTokenConverter;
+	
+	@Autowired(required=false)
+	private ImoocJwtTokenEnhancer jwtTokenEnhancer;
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -44,6 +57,19 @@ public class ImoocAuthenticationServerConfig extends AuthorizationServerConfigur
 		endpoints.authenticationManager(authenticationManager)
 					.userDetailsService(userDetailsService)
 					.tokenStore(tokenStore);
+		
+		if(null != jwtAccessTokenConverter && null != jwtTokenEnhancer) {
+			TokenEnhancerChain chain = new TokenEnhancerChain();
+			
+			List<TokenEnhancer> enhancer = new ArrayList<TokenEnhancer>();
+			enhancer.add(jwtTokenEnhancer);
+			enhancer.add(jwtAccessTokenConverter);
+			chain.setTokenEnhancers(enhancer);
+			
+			endpoints.tokenEnhancer(chain)
+					.accessTokenConverter(jwtAccessTokenConverter);
+		}
+		
 	}
 	
 	@Override

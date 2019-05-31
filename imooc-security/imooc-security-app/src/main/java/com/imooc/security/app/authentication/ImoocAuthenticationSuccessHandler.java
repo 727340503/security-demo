@@ -76,6 +76,7 @@ public class ImoocAuthenticationSuccessHandler extends SavedRequestAwareAuthenti
 		
 		OAuth2AccessToken token = authorizationServerTokenServices.createAccessToken(oatuth2Authentication);
 		
+		System.out.println("===================ImoocAuthenticationSuccessHandler");
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(objectMapper.writeValueAsString(token));
 	}
